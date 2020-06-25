@@ -14,7 +14,9 @@ public class SearchEngine{
 
 	public SearchEngine(){
 		entries = new HashMap<String, ArrayList<Entry>>(); 
-		try {                                              //readFile may throw an exception. 
+		try { 
+			//** readFile may throw an exception **//
+			
 			readFiles();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -22,19 +24,26 @@ public class SearchEngine{
 	}
   
 	private void readFiles() throws IOException {   
+		
+		//** Stores a directory for reading **//
 
-		File dir = new File("/home/codio/workspace/src/main/java/cms330/texts");    //stores a directory 
-
-		for (File file : dir.listFiles()) {                    //loops for each file in directory
-			parser(file);                                      //calls parser method and passes current file
+		File dir = new File("/home/codio/workspace/src/main/java/cms330/texts");    
+		
+		//** loops for each file in directory in the saved directory **//
+		for (File file : dir.listFiles()) {    
+			
+			//** calls parser with current file as argument **//
+			parser(file);                                     
 		} 
 	}
 	private void parser(File file) throws IOException {
 
-		Scanner in = new Scanner(new BufferedReader(new FileReader(file)));	  //reads the file passed as a parameter
+		Scanner in = new Scanner(new BufferedReader(new FileReader(file)));	  
 
 		String currentLine = in.nextLine();
-		String playName = currentLine;                            //saves first line in the file as the play name
+		
+		//** saves first line in the file as the name of the play **//
+		String playName = currentLine;                            
 		String act = "";
 		String scene = "";
 		String character = "";
@@ -42,8 +51,9 @@ public class SearchEngine{
 		int i; 
 		Entry e;
 		
-
-		while(!currentLine.contains("ACT")) {                     //saves the prologue. literally only for romeo and juliet
+		//** saves the prologue. currently only for romeo and juliet **//
+		
+		while(!currentLine.contains("ACT")) {                     
 			currentLine = in.nextLine();
 			fields = currentLine.split(" ");
 			for(i = 0; i < fields.length; i++) {
@@ -54,30 +64,41 @@ public class SearchEngine{
 			}
 
 		}
-
-		while (in.hasNext()) {                                                              //reads each file per line 
-
-			fields = currentLine.split(" ");   //splits line into words and stores them in array
-
-			if(fields[0].equals("ACT")){            //finds act 
+		
+		//** reads each line per file **//
+		while (in.hasNext()) {      
+			
+			//** splits line into words and stores them in array **//
+			fields = currentLine.split(" ");   
+			
+			//** finds act **//
+			if(fields[0].equals("ACT")){            
 				act = currentLine;
 				currentLine = in.nextLine();
 			}
-
-			else if (fields[0].equals("SCENE")){        //finds scene
-				scene = setScene(fields, currentLine);                  //sets current scene  
+			
+			//** finds scene **//
+			else if (fields[0].equals("SCENE")){    
+				
+				//** sets current scene **//
+				scene = setScene(fields, currentLine);                   
 				currentLine = in.nextLine();      
 
 			} else {
 				fields = currentLine.split("");
-				if(!fields[0].contains("\t") && fields.length > 1 ) {     //finds character
-					character = setCharacter(fields, currentLine);                                  //sets character
+				
+				//** finds character **//
+				if(!fields[0].contains("\t") && fields.length > 1 ) {  
+					
+					//** sets character **//
+					character = setCharacter(fields, currentLine);                                  
 				}
 			}
 
 			fields = currentLine.split(" ");
 			
-			if(currentLine.contains("[") || currentLine.contains("]") ) {                          //finds and saves stage directions
+			//** finds and saves stage directions **//
+			if(currentLine.contains("[") || currentLine.contains("]") ) {                          
 				for(i = 0; i < fields.length; i++) {
 					if(fields[i].length() >= 4) {
 						e = new Entry(playName, act, scene, "STAGE DIRECTIONS", currentLine);
@@ -85,7 +106,9 @@ public class SearchEngine{
 					}
 				}
 			} else {
-			for(i = 0; i < fields.length; i++) {                      //find and saves other lines
+				
+				//** find and saves other lines **//
+			for(i = 0; i < fields.length; i++) {                      
 				if(fields[i].length() >= 4) {
 					e = new Entry(playName, act, scene, character, currentLine);
 					entryAdder(e, fields[i]);
@@ -98,10 +121,13 @@ public class SearchEngine{
 	}
 
 	private void entryAdder(Entry e, String key) {
+		
+		//** gets rid of extra characters for better querying **//
 
 		key = key.replace(";", "").replace(":", "").replace(".", "").replace(",", "")
 				.replace("?", "").replace("!", "").replace("[", "").replace("]", "")
-      .replace("\t", "").replace("-", "").replace("'", ""); //gets rid of extra characters for better querying 
+      .replace("\t", "").replace("-", "").replace("'", ""); 
+		
 		key = key.toLowerCase();
 
 		if(!entries.containsKey(key)) {
@@ -144,7 +170,7 @@ public class SearchEngine{
     return fields[0] + " " + fields[1];  
 	}
   
-  //here for legacy 
+  //** here for legacy **//
 	private void searchBar(){
     System.out.println("Hello, welcome to 'To find or not to find' our Shakesperean search engine\n\n");
 		System.out.println("Type 'He that dies pays all debts' if you wish to exit\n\n");
